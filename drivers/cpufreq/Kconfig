@@ -117,6 +117,12 @@ config CPU_FREQ_DEFAULT_GOV_SMARTASS2
   	help
   	  Use the CPUFreq governor 'smartassV2' as default.
 
++config CPU_FREQ_DEFAULT_GOV_INTERACTIVEX
+	bool "interactive"
+	select CPU_FREQ_GOV_INTERACTIVEX
+	help
+	Use the CPUFreq governor 'interactivex' as default.
+
 
 endchoice
 
@@ -205,6 +211,13 @@ config CPU_FREQ_GOV_SMARTASS2
 	'smartassV2' - a "smart" optimized governor.
 
 	If in doubt, say N.
+
+config CPU_FREQ_GOV_INTERACTIVEX
+  	tristate "'interactivex' cpufreq policy governor"
+	help
+	'interactivex' - This driver adds a dynamic cpufreq policy governor
+	designed for latency-sensitive workloads.
+
   	
 
 
