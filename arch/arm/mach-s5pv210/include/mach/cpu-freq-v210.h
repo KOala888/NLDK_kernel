@@ -17,14 +17,13 @@
 /*
  * APLL M,P,S value for target frequency
  **/
-#define APLL_VAL_1664	((1<<31)|(417<<16)|(3<<8)|(0))
-#define APLL_VAL_1332	((1<<31)|(444<<16)|(4<<8)|(0))
-#define APLL_VAL_1200	((1<<31)|(150<<16)|(3<<8)|(1))
+#define APLL_VAL_1400	((1<<31)|(175<<16)|(3<<8)|(1))
+#define APLL_VAL_1332	((1<<31)|(175<<16)|(4<<8)|(1))
 #define APLL_VAL_1000	((1<<31)|(125<<16)|(3<<8)|(1))
 #define APLL_VAL_800	((1<<31)|(100<<16)|(3<<8)|(1))
 
 enum perf_level {
-	L0 = 0,	// 1.2GHz
+	L0 = 0,	// 1.3GHz
 	L1,     // 1GHz
 	L2,	// 800MHz
 	L3,	// 400MHz

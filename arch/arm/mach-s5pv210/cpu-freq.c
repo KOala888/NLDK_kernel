@@ -54,7 +54,7 @@ extern int exp_UV_mV[6];
 
 /* frequency */
 static struct cpufreq_frequency_table freq_table[] = {
-	{L0, 1200*1000},
+	{L0, 1332*1000},
 	{L1, 1000*1000},
 	{L2, 800*1000},
 	{L3, 400*1000},
@@ -75,12 +75,12 @@ static unsigned int g_dvfslockval[DVFS_LOCK_TOKEN_NUM];
 //static DEFINE_MUTEX(dvfs_high_lock);
 #endif
 
-const unsigned long arm_volt_max = 1350000;
-const unsigned long int_volt_max = 1250000;
+const unsigned long arm_volt_max = 1400000;
+const unsigned long int_volt_max = 1300000;
 
 static struct s5pv210_dvs_conf dvs_conf[] = {
 	[L0] = {
-		.arm_volt   = 1300000,
+		.arm_volt   = 1350000,
 		.int_volt   = 1125000,
 	},
 	[L1] = {
@@ -110,7 +110,7 @@ static u32 clkdiv_val[6][11] = {
 	 * HCLK_DSYS, PCLK_DSYS, HCLK_PSYS, PCLK_PSYS, ONEDRAM,
 	 * MFC, G3D }
 	 */
-	/* L0 : [1200/200/200/100][166/83][133/66][200/200] */
+	/* L0 : [1332/200/200/100][166/83][133/66][200/200] */
 	{0, 5, 5, 1, 3, 1, 4, 1, 3, 0, 0},
 	/* L1 : [1000/200/200/100][166/83][133/66][200/200] */
 	{0, 4, 4, 1, 3, 1, 4, 1, 3, 0, 0},
@@ -125,9 +125,9 @@ static u32 clkdiv_val[6][11] = {
 };
 
 static struct s3c_freq clk_info[] = {
-	[L0] = {	/* L0: 1.2GHz */
-		.fclk       = 1200000,
-		.armclk     = 1200000,
+	[L0] = {	/* L0: 1.33GHz */
+		.fclk       = 1332000,
+		.armclk     = 1332000,
 		.hclk_tns   = 0,
 		.hclk       = 133000,
 		.pclk       = 66000,
@@ -303,8 +303,8 @@ static void s5pv210_cpufreq_clksrcs_MPLL2APLL(unsigned int index,
 	//	__raw_writel(PLL45XX_APLL_VAL_800, S5P_APLL_CON);
         switch ( index ) {
                 case L0:
-                        /* APLL FOUT becomes 1200 Mhz */
-                        __raw_writel(PLL45XX_APLL_VAL_1200, S5P_APLL_CON);
+                        /* APLL FOUT becomes 1332 Mhz */
+                        __raw_writel(PLL45XX_APLL_VAL_1332, S5P_APLL_CON);
                         break;
                 case L1:
                         /* APLL FOUT becomes 1000 Mhz */
@@ -804,7 +804,7 @@ static int __init s5pv210_cpufreq_driver_init(struct cpufreq_policy *policy)
 
 	ret = cpufreq_frequency_table_cpuinfo(policy, freq_table);
 	/* define safe default min and max speeds */
-	policy->max = 1200000;
+	policy->max = 1332000;
 	policy->min = 100000;
 	return ret;
 }
