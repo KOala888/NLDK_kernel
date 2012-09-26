@@ -9,7 +9,7 @@ rm -rf $(find kernel/usr/initramfs -name .git -print)
 ## Build exodus kernel
 make exodus_defconfig
 #get rid of the damn + after the version
-export LOCALVERSION=""
+export LOCALVERSION="-EXODUS-R1.1"
 make -j4 && cp -a $(find . -name *.ko -print |grep -v initramfs) kernel/usr/initramfs/lib/modules/ && make -j4
 
 ## Upload compiled kernel to dropbox
