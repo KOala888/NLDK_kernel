@@ -1,4 +1,9 @@
 #!/bin/sh
+
+## Set compiler location
+export arch="arm"
+export CROSS_COMPILE="~/code/arm-2009q3/bin/arm-none-eabi-"
+
 ## Setup and make sure initramfs is clear
 mkdir -p kernel/usr/initramfs
 rm -rf kernel/usr/initramfs/*
@@ -6,11 +11,12 @@ cp -R ../initramfs_yp-g70/* kernel/usr/initramfs
 rm $(find kernel/usr/initramfs -name EMPTY_DIRECTORY -print)
 rm -rf $(find kernel/usr/initramfs -name .git -print)
 
+
 ## Build exodus kernel
-make exodus_defconfig
+make -j3 exodus_defconfig
 #get rid of the damn + after the version
 export LOCALVERSION="-EXODUS-R1.1"
-make -j4 && cp -a $(find . -name *.ko -print |grep -v initramfs) kernel/usr/initramfs/lib/modules/ && make -j4
+make -j3 && cp -a $(find . -name *.ko -print |grep -v initramfs) kernel/usr/initramfs/lib/modules/ && make -j3
 
 ## Upload compiled kernel to dropbox
 cp arch/arm/boot/zImage ~/Dropbox/Kernel/Compiled/
