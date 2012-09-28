@@ -4,6 +4,7 @@
 TEMPL="EXODUS_BUILDSCRIPT/TEMPLATES"
 ## Source directory
 SRC="/home/dan/code/git_code/linux_kernel_galaxyplayer"
+MAKE="3"
 
 
 ## User stuff
@@ -15,6 +16,7 @@ read version
 DROPBOX="/home/dan/Dropbox/Kernel/Compiled/R$version"
 echo "Building Exodus R$version"
 echo "Dropbox location set to $DROPBOX"
+echo "setting Make -j$MAKE"
 sleep 5
 
 
@@ -36,13 +38,13 @@ sleep 2
 ## Build exodus kernel
 echo 'Setting defconfig for build'
 sleep 1
-make -j4 exodus_defconfig
+make -j$MAKE exodus_defconfig
 echo SETTING LOCALVERSION "-EXODUS-R$version"
 sleep 1
 export LOCALVERSION="-EXODUS-R$version"
 echo MAKING MODULES
 sleep 1
-make -j4 && cp -a $(find . -name *.ko -print |grep -v initramfs) kernel/usr/initramfs/lib/modules/ && make -j4
+make -j$MAKE && cp -a $(find . -name *.ko -print |grep -v initramfs) kernel/usr/initramfs/lib/modules/ && make -j$MAKE
 
 
 ## Upload compiled kernel zimage to dropbox
@@ -76,9 +78,11 @@ response=$?
 case $response in
    0) echo "Making tar!"
 	cp arch/arm/boot/zImage EXODUS_BUILDSCRIPT/
-	tar -cvf EXODUS-R$version-ODIN.tar EXODUS_BUILDSCRIPT/zImage
+	cd EXODUS_BUILDSCRIPT/
+	tar -cvf EXODUS-R$version-ODIN.tar zImage
 	# move to dropbox
 	mv EXODUS-R$version-ODIN.tar $DROPBOX/
+	cd $SRC
 	rm EXODUS_BUILDSCRIPT/zImage
 	echo 'Added to archive. See EXODUS_BUILDSCRIPT/ for tar.'
 	;;
@@ -108,7 +112,7 @@ case $response in
 	# move to dropbox
 	mv $TEMPL/cwmtemp/EXODUS_R$version-CWM.zip $DROPBOX/
 	rm -rf $(find $TEMPL/cwmtemp/ -print)
-	echo 'CWM built. See EXODUS_BUILDSCRIPT/ for file'
+	echo 'CWM built. See $DROPBOX for file'
 	sleep 3
 	;;
    1) echo "zip not made. Moving on!";;
