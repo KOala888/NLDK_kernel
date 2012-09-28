@@ -1,27 +1,127 @@
 #!/bin/sh
+## SCRIPT MUST BE RUN FROM ROOT SOURCE DIRECTORY 
+## requires 'dialog' and 'p7zip' packages installed
+TEMPL="EXODUS_BUILDSCRIPT/TEMPLATES"
+## Source directory
+SRC="/home/dan/code/git_code/linux_kernel_galaxyplayer"
+
+
+## User stuff
+clear
+echo Running build script!
+echo "What version shall we build (ex. 1.0, 2.1):\c"
+read version
+## dropbox folder, or folder to move completed files to
+DROPBOX="/home/dan/Dropbox/Kernel/Compiled/R$version"
+echo "Building Exodus R$version"
+echo "Dropbox location set to $DROPBOX"
+sleep 5
+
 
 ## Set compiler location
+echo Setting compiler location...
 export arch="arm"
-export CROSS_COMPILE="~/code/arm-2009q3/bin/arm-none-eabi-"
+export CROSS_COMPILE="/home/dan/code/arm-2009q3/bin/arm-none-eabi-"
 
 ## Setup and make sure initramfs is clear
+echo setting initramfs folders
 mkdir -p kernel/usr/initramfs
 rm -rf kernel/usr/initramfs/*
 cp -R ../initramfs_yp-g70/* kernel/usr/initramfs
 rm $(find kernel/usr/initramfs -name EMPTY_DIRECTORY -print)
 rm -rf $(find kernel/usr/initramfs -name .git -print)
-
+echo Done cleaning up initramfs folders
+sleep 2
 
 ## Build exodus kernel
-make -j3 exodus_defconfig
-#get rid of the damn + after the version
-export LOCALVERSION="-EXODUS-R1.1"
-make -j3 && cp -a $(find . -name *.ko -print |grep -v initramfs) kernel/usr/initramfs/lib/modules/ && make -j3
+echo 'Setting defconfig for build'
+sleep 1
+make -j4 exodus_defconfig
+echo SETTING LOCALVERSION "-EXODUS-R$version"
+sleep 1
+export LOCALVERSION="-EXODUS-R$version"
+echo MAKING MODULES
+sleep 1
+make -j4 && cp -a $(find . -name *.ko -print |grep -v initramfs) kernel/usr/initramfs/lib/modules/ && make -j4
 
-## Upload compiled kernel to dropbox
-cp arch/arm/boot/zImage ~/Dropbox/Kernel/Compiled/
 
+## Upload compiled kernel zimage to dropbox
+
+dialog --title "Dropbox Upload" \
+	--backtitle "Upload to Dropbox" \
+	--yesno "Do you want to upload the zImage file to dropbox?" 7 60
+
+response=$?
+case $response in
+   0) echo "Uploading now. /EXODUS_R$version-zImage"
+	echo "Checking for duplicate folder and removing.."
+	rm -rf $(find $DROPBOX/ -print)
+	mkdir $DROPBOX/
+	cp arch/arm/boot/zImage $DROPBOX/
+	mv $DROPBOX/zImage $DROPBOX/EXODUS_R$version-zImage
+	;;
+   1) echo "File not uploaded. Moving on!";;
+   255) echo "[ESC] key pressed. Moving on.";;
+
+esac
+
+
+## make ODIN tar
+
+dialog --title "Make ODIN tar?" \
+	--backtitle "ODIN" \
+	--yesno "Do you want to make an ODIN flashable tar?" 7 60
+
+response=$?
+case $response in
+   0) echo "Making tar!"
+	cp arch/arm/boot/zImage EXODUS_BUILDSCRIPT/
+	tar -cvf EXODUS-R$version-ODIN.tar EXODUS_BUILDSCRIPT/zImage
+	# move to dropbox
+	mv EXODUS-R$version-ODIN.tar $DROPBOX/
+	rm EXODUS_BUILDSCRIPT/zImage
+	echo 'Added to archive. See EXODUS_BUILDSCRIPT/ for tar.'
+	;;
+   1) echo "Tar not made. Moving on!";;
+   255) echo "[ESC] key pressed. Moving on.";;
+
+esac
+
+
+
+
+## make CWM flashable zip
+
+dialog --title "Make CWM zip?" \
+	--backtitle "CWM ZIP" \
+	--yesno "Do you want to make an CWM update zip?" 7 60
+ 
+response=$?
+case $response in
+   0) echo "Making zip!"
+	unzip $TEMPL/EXODUS_CWM_TEMPLATE.zip -d $TEMPL/cwmtemp/
+	sed -i "s/TIGER/R$version/g" $TEMPL/cwmtemp/META-INF/com/google/android/updater-script
+	cp arch/arm/boot/zImage $TEMPL/cwmtemp/
+	cd $TEMPL/cwmtemp
+	7za a -r EXODUS_R$version-CWM.zip
+	cd $SRC
+	# move to dropbox
+	mv $TEMPL/cwmtemp/EXODUS_R$version-CWM.zip $DROPBOX/
+	rm -rf $(find $TEMPL/cwmtemp/ -print)
+	echo 'CWM built. See EXODUS_BUILDSCRIPT/ for file'
+	sleep 3
+	;;
+   1) echo "zip not made. Moving on!";;
+   255) echo "[ESC] key pressed. Moving on.";;
+
+esac
+
+
+
+echo Script end.
 ## flash built kernel with heimdall
 # adb shell reboot download
 # sleep 5
 # heimdall flash --kernel arch/arm/boot/zImage
+
+
