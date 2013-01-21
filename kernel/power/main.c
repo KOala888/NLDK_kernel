@@ -291,9 +291,9 @@ if (dtime_msec == 0)
 return -EINVAL;
 
 if (dlevel)
-dlevel = L2;
+dlevel = L3;
 else
-dlevel = L1;
+dlevel = L2;
 
 printk(KERN_DEBUG "%s : level=%d, time=%d\n", __func__, dlevel, dtime_msec);
 

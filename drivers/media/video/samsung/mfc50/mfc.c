@@ -85,7 +85,7 @@ goto err_open;
 }
 
 #ifdef CONFIG_DVFS_LIMIT
-s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_1, L3);
+s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_1, L4);
 #endif
 clk_enable(mfc_sclk);
 
