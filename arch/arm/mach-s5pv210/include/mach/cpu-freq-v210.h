@@ -28,7 +28,7 @@
 
 enum perf_level {
 L0 = 0,	// 1.52GHz
-L1 	// 1.32GHz
+L1, 	// 1.32GHz
 L2, // 1.096GHz
 L3,	// 800MHz
 L4,	// 400MHz
