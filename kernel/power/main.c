@@ -291,9 +291,9 @@ if (dtime_msec == 0)
 return -EINVAL;
 
 if (dlevel)
-dlevel = L3;
-else
 dlevel = L2;
+else
+dlevel = L1;
 
 printk(KERN_DEBUG "%s : level=%d, time=%d\n", __func__, dlevel, dtime_msec);
 
@@ -309,7 +309,7 @@ return -EINVAL;
 
 static void do_dvfsunlock_timer(struct work_struct *work)
 {
-dvfsctrl_locked = 0;	
+dvfsctrl_locked = 0;  
 s5pv210_unlock_dvfs_high_level(DVFS_LOCK_TOKEN_6);
 }
 
