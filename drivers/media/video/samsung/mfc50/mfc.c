@@ -66,7 +66,7 @@ static struct resource *mfc_mem;
 static struct mutex mfc_mutex;
 static struct clk *mfc_sclk;
 static struct regulator *mfc_pd_regulator;
-const struct firmware	*mfc_fw_info;
+const struct firmware       *mfc_fw_info;
 
 static int mfc_open(struct inode *inode, struct file *file)
 {
@@ -85,7 +85,7 @@ goto err_open;
 }
 
 #ifdef CONFIG_DVFS_LIMIT
-s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_1, L4);
+s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_1, L3);
 #endif
 clk_enable(mfc_sclk);
 
