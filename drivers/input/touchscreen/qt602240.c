@@ -332,7 +332,7 @@ touchscreen_config.movfilter = 11;
 touchscreen_config.movfilter = 46;
 #endif
 #ifdef _SUPPORT_MULTITOUCH_
-touchscreen_config.numtouch= MAX_USING_FINGER_NUM;	// it is 5 now and it can be set up to 10
+touchscreen_config.numtouch= MAX_USING_FINGER_NUM;                                          // it is 5 now and it can be set up to 10
 #else
 touchscreen_config.numtouch= 1;
 #endif
@@ -3380,7 +3380,7 @@ return ;
 #if TOUCH_CPU_FREQ
 if (touch_cpu_freq_flag == 0) {
 touch_cpu_freq_flag = 1;
-s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L3);
+s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L2);
 }
 #endif
 #ifdef _SUPPORT_MULTITOUCH_
