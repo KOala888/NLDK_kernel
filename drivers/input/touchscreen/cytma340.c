@@ -53,7 +53,7 @@
 #include <mach/gpio.h>
 
 
-static	void	__iomem	*gpio_pend_mask_mem;
+static    void	__iomem	*gpio_pend_mask_mem;
 
 #define INT_PEND_BASE 0xE0200A44
 #define IRQ_TOUCH_INT (IRQ_EINT_GROUP18_BASE+5) /* J0_5 */
@@ -889,7 +889,7 @@ goto work_func_out;
 if (num_of_touch > 0) {
 if(touch_state_val == 0)
 {
-s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L3); // cpu high speed setting.
+s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L2); // cpu high speed setting.
 resume_dvfs_lock = false;
 touch_state_val = 1;
 }
@@ -900,7 +900,7 @@ if(point[0].id == 1)
 // first touch pressed!
 if(touch_state_val == 0)
 {
-s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L3); // cpu high speed setting.
+s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L2); // cpu high speed setting.
 resume_dvfs_lock = false;
 touch_state_val = 1;
 }
@@ -935,7 +935,7 @@ b_add_menukey_timer = TRUE;
 #if TOUCH_DVFS_CONTROL
 if(touch_state_val == 0)
 {
-s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L3); // cpu high speed setting.
+s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L2); // cpu high speed setting.
 resume_dvfs_lock = false;
 touch_state_val = 1;
 }
@@ -978,7 +978,7 @@ b_add_backkey_timer = TRUE;
 #if TOUCH_DVFS_CONTROL
 if(touch_state_val == 0)
 {
-s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L3); // cpu high speed setting.
+s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L2); // cpu high speed setting.
 resume_dvfs_lock = false;
 touch_state_val = 1;
 }
@@ -1016,7 +1016,7 @@ b_add_homekey_timer = TRUE;
 #if TOUCH_DVFS_CONTROL
 if(touch_state_val == 0)
 {
-s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L3); // cpu high speed setting.
+s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_7, L2); // cpu high speed setting.
 resume_dvfs_lock = false;
 touch_state_val = 1;
 }
