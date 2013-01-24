@@ -42,7 +42,7 @@
 #define MAPPING_SIZE 0x10000
 #define SGX540_IRQ IRQ_3D
 
-#define SYS_SGX_CLOCK_SPEED					(200000000)
+#define SYS_SGX_CLOCK_SPEED					(250000000)
 #define SYS_SGX_HWRECOVERY_TIMEOUT_FREQ		(100) // 10ms (100hz)
 #define SYS_SGX_PDS_TIMER_FREQ				(1000) // 1ms (1000hz)
 #ifndef SYS_SGX_ACTIVE_POWER_LATENCY_MS
@@ -94,6 +94,10 @@ IMG_UINT32   PVRSRV_BridgeDispatchKM( IMG_UINT32  Ioctl,
 static struct clk *g3d_clock;
 static struct regulator *g3d_pd_regulator;
 
+#ifdef CONFIG_LIVE_OC
+extern unsigned long get_gpuminfreq(void);
+#endif
+
 static int limit_adjust_cpufreq_notifier(struct notifier_block *nb,
 					 unsigned long event, void *data)
 {
@@ -104,8 +108,13 @@ static int limit_adjust_cpufreq_notifier(struct notifier_block *nb,
 
 	/* This is our indicator of GPU activity */
 	if (regulator_is_enabled(g3d_pd_regulator))
+#ifdef CONFIG_LIVE_OC
+		cpufreq_verify_within_limits(policy, get_gpuminfreq(),
+					     policy->cpuinfo.max_freq);
+#else
 		cpufreq_verify_within_limits(policy, MIN_CPU_KHZ_FREQ,
 					     policy->cpuinfo.max_freq);
+#endif
 
 	return 0;
 }
@@ -247,7 +256,7 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 
 	gpsSysData->pvSysSpecificData = (IMG_PVOID)&gsSysSpecificData;
 	OSMemSet(&gsSGXDeviceMap, 0, sizeof(SGX_DEVICE_MAP));
-	
+
 	/* Set up timing information*/
 	psTimingInfo = &gsSGXDeviceMap.sTimingInfo;
 	psTimingInfo->ui32CoreClockSpeed = SYS_SGX_CLOCK_SPEED;
@@ -350,7 +359,7 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 				{
 #if defined(SGX_FEATURE_VARIABLE_MMU_PAGE_SIZE)
 					IMG_CHAR *pStr;
-								
+
 					switch(psDeviceMemoryHeap[i].ui32HeapID)
 					{
 						case HEAP_ID(PVRSRV_DEVICE_TYPE_SGX, SGX_GENERAL_HEAP_ID):
@@ -531,8 +540,6 @@ PVRSRV_ERROR SysFinalise(IMG_VOID)
 
 #if defined(SUPPORT_ACTIVE_POWER_MANAGEMENT)
 	DisableSGXClocks();
-	cpufreq_register_notifier(&cpufreq_limit_notifier,
-				  CPUFREQ_POLICY_NOTIFIER);
 #endif 
 
 	return PVRSRV_OK;
@@ -672,7 +679,7 @@ IMG_DEV_PHYADDR SysCpuPAddrToDevPAddr (PVRSRV_DEVICE_TYPE eDeviceType,
 
 	/* Note: for no HW UMA system we assume DevP == CpuP */
 	DevPAddr.uiAddr = CpuPAddr.uiAddr;
-	
+
 	return DevPAddr;
 }
 
