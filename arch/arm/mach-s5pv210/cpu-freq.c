@@ -103,6 +103,7 @@ static struct s5pv210_dvs_conf dvs_conf[] = {
 .arm_volt = 900000,
 .int_volt = 1100000,
 },
+};
 
 static u32 clkdiv_val[6][11] = {
 /*{ APLL, A2M, HCLK_MSYS, PCLK_MSYS,
