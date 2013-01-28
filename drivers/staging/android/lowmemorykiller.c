@@ -182,7 +182,7 @@ static int lowmem_shrink(struct shrinker *s, int nr_to_scan, gfp_t gfp_mask)
 			if (oom_adj < selected_oom_adj)
 				continue;
 			if (oom_adj == selected_oom_adj &&
-			    target_offset >= selected_target_offset))
+			    target_offset >= selected_target_offset)
 				continue;
 		}
 		selected = p;
