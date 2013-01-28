@@ -173,7 +173,7 @@ extern struct cred init_cred;
 	INIT_TRACE_RECURSION						\
 	INIT_TASK_RCU_PREEMPT(tsk)					\
 }
-#endif /* CONFIG_SCHED_BFS */
+
 
 #define INIT_CPU_TIMERS(cpu_timers)					\
 {									\
