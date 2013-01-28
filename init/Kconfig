@@ -551,7 +551,7 @@ config RESOURCE_COUNTERS
 
 config CGROUP_MEM_RES_CTLR
 	bool "Memory Resource Controller for Control Groups"
-	depends on CGROUPS && RESOURCE_COUNTERS
+	depends on CGROUPS 
 	select MM_OWNER
 	help
 	  Provides a memory resource controller that manages both anonymous
@@ -592,7 +592,7 @@ config CGROUP_MEM_RES_CTLR_SWAP
 
 menuconfig CGROUP_SCHED
 	bool "Group CPU scheduler"
-	depends on EXPERIMENTAL && CGROUPS && !SCHED_BFS
+	depends on EXPERIMENTAL && CGROUPS 
 	default n
 	help
 	  This feature lets CPU scheduler recognize task groups and control CPU
