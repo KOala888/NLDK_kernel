@@ -39,6 +39,11 @@
 #endif
 #include "s3cfb.h"
 
+#if (CONFIG_FB_S3C_NUM_OVLY_WIN >= CONFIG_FB_S3C_DEFAULT_WINDOW)
+#error "FB_S3C_NUM_OVLY_WIN should be less than FB_S3C_DEFAULT_WINDOW"
+#endif
+
+
 #include "logo_rgb24_wvga_portrait.h"
 
 #ifdef CONFIG_FB_S3C_MDNIE
