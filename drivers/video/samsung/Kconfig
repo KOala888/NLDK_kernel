@@ -47,7 +47,6 @@ config FB_S3C_NR_BUFFERS
 	  This indicates the number of buffers for pan display,
 	  1 means no pan display and
 	  2 means the double size of video buffer will be allocated for default window
-
 config FB_S3C_NUM_OVLY_WIN
 	int "Number of overlay window (0-3)"
 	range 0 3
