@@ -181,9 +181,9 @@ static int aries_notifier_call(struct notifier_block *this,
 			mode = REBOOT_MODE_ARM9_FOTA;
 		else if (!strcmp((char *)_cmd, "recovery"))
 			mode = REBOOT_MODE_RECOVERY;
-		//else if (!strcmp((char *)_cmd, "bootloader"))
-		//	mode = REBOOT_MODE_FAST_BOOT;
 		else if (!strcmp((char *)_cmd, "bootloader"))
+			mode = REBOOT_MODE_FAST_BOOT;
+		else if (!strcmp((char *)_cmd, "download"))
 			mode = REBOOT_MODE_DOWNLOAD;
 		else
 			mode = REBOOT_MODE_NONE;
@@ -220,7 +220,7 @@ static void gps_gpio_init(void)
 	if (device_create_file(gps_dev, &dev_attr_hwrev) < 0)
 		pr_err("Failed to create device file(%s)!\n",
 		       dev_attr_hwrev.attr.name);
-	
+
 	gpio_request(GPIO_GPS_nRST, "GPS_nRST");	/* XMMC3CLK */
 	s3c_gpio_setpull(GPIO_GPS_nRST, S3C_GPIO_PULL_NONE);
 	s3c_gpio_cfgpin(GPIO_GPS_nRST, S3C_GPIO_OUTPUT);
@@ -305,12 +305,9 @@ static struct s3c2410_uartcfg aries_uartcfgs[] __initdata = {
 	},
 };
 
-#define S5PV210_LCD_WIDTH 480
-#define S5PV210_LCD_HEIGHT 800
-
 static struct s3cfb_lcd hx8369 = {
-        .width = S5PV210_LCD_WIDTH,
-        .height = S5PV210_LCD_HEIGHT,
+	.width = 480,
+	.height = 800,
 	.p_width = 52,
 	.p_height = 86,
 	.bpp = 24,
@@ -335,40 +332,37 @@ static struct s3cfb_lcd hx8369 = {
 };
 
 #if 0
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0 (5000 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC2 (5000 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0 (14745 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC1 (9900 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC2 (14745 * SZ_1K)
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (32768 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (32768* SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMD (3000 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_JPEG (4096 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_PMEM (2048 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_GPU1 (3000 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_ADSP (1500* SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (32768 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMD (4800 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_JPEG (8192 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_PMEM (8192 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_GPU1 (3300 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_ADSP (6144 * SZ_1K)
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_TEXTSTREAM (3000 * SZ_1K)
 #else	// optimized settings, 19th Jan.2011
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0 (5000 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC2 (5000 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0 (12288 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC1 (9900 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC2 (12288 * SZ_1K)
 #if !defined(CONFIG_ARIES_NTT)   
 #if defined(CONFIG_VENTURI_KOR) // Usys_sadang KH23 support playing 1080p
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (32768 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (32768* SZ_1K)
-#else    /* NTT - support playing 1080p */
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (32768 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (32768* SZ_1K)
-#endif
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (36864 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (36864 * SZ_1K)
 #else    /* NTT - support playing 1080p */
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (32768 * SZ_1K)
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (32768 * SZ_1K)
 #endif
-//#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMD (3000 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMD (S5PV210_LCD_WIDTH * \
-                                             S5PV210_LCD_HEIGHT * 4 * \
-                                             (CONFIG_FB_S3C_NR_BUFFERS + \
-                                                 (CONFIG_FB_S3C_NUM_OVLY_WIN * \
-                                                  CONFIG_FB_S3C_NUM_BUF_OVLY_WIN)))
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_JPEG (4096 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_PMEM (2048 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_GPU1 (3000 * SZ_1K)
+#else    /* NTT - support playing 1080p */
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (36864 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (36864 * SZ_1K)
+#endif
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMD (3000 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_JPEG (5012 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_PMEM (5550 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_GPU1 (3300 * SZ_1K)
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_ADSP (1500 * SZ_1K)
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_TEXTSTREAM (3000 * SZ_1K)
 #endif
@@ -394,6 +388,13 @@ static struct s5p_media_device aries_media_devs[] = {
 		.name = "fimc0",
 		.bank = 1,
 		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0,
+		.paddr = 0,
+	},
+	[3] = {
+		.id = S5P_MDEV_FIMC1,
+		.name = "fimc1",
+		.bank = 1,
+		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC1,
 		.paddr = 0,
 	},
 	[4] = {
@@ -696,8 +697,8 @@ static struct regulator_init_data aries_ldo16_data = {
 static struct regulator_init_data aries_ldo17_data = {
 	.constraints	= {
 		.name		= "VCC_3.0V_LCD",
-		.min_uV		= 2600000,
-		.max_uV		= 2600000,
+		.min_uV		= 3000000,
+		.max_uV		= 3000000,
 		.apply_uV	= 1,
 		.always_on	= 0,
 		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
@@ -1127,7 +1128,7 @@ static int hx8369_backlight_on(struct platform_device *pdev)
 static int get_lcdtype(void)
 {
 	int panel_id;
-	
+
 	if((gpio_get_value(GPIO_OLED_ID)==0) && ( gpio_get_value(GPIO_DIC_ID) != 0))
 		panel_id = 0; // Sony Panel
 	else if((gpio_get_value(GPIO_OLED_ID)!=0) && ( gpio_get_value(GPIO_DIC_ID) == 0))
@@ -1474,12 +1475,12 @@ static struct gpio_event_direct_entry aries_keypad_key_map[] = {
 			.code	= KEY_POWER,
 		},
 #if defined(CONFIG_MACH_VENTURI)
-//#if !defined(CONFIG_VENTURI_USA)
+#if !defined(CONFIG_VENTURI_USA)
 		{
 			.gpio	= S5PV210_GPH3(0),
 			.code	= KEY_HOME,
 		},
-//#endif
+#endif
 		{
 			.gpio	= S5PV210_GPH3(1),
 			.code	= KEY_VOLUMEDOWN,
@@ -1731,7 +1732,7 @@ static int ce147_ldo_en(bool en)
 		goto off;
 	}
 	udelay(50);
-	
+
 	/* Turn CAM_SENSOR_A_2.8V(VDDA) on */
 	gpio_set_value(GPIO_GPB7, 1);
 	mdelay(1);
@@ -1798,7 +1799,7 @@ static int ce147_power_on(void)
 			pr_err("Failed to initialize camera regulators\n");
 			return -EINVAL;
 	}
-	
+
 	ce147_init();
 
 	/* CAM_VGA_nSTBY - GPB(0)  */
@@ -1818,7 +1819,7 @@ static int ce147_power_on(void)
 
 		return err;
 	}
-	
+
 	ce147_ldo_en(TRUE);
 
 	mdelay(1);
@@ -1880,10 +1881,10 @@ static int ce147_power_off(void)
 
 	/* CAM_IO_EN - GPB(7) */
 	err = gpio_request(GPIO_GPB7, "GPB7");
-	
+
 	if(err) {
 		printk(KERN_ERR "failed to request GPB7 for camera control\n");
-	
+
 		return err;
 	}
 
@@ -1892,16 +1893,16 @@ static int ce147_power_off(void)
 
 	if(err) {
 		printk(KERN_ERR "failed to request GPJ0 for camera control\n");
-	
+
 		return err;
 	}
 
 	/* CAM_MEGA_nRST - GPJ1(5) */
 	err = gpio_request(GPIO_CAM_MEGA_nRST, "GPJ1");
-	
+
 	if(err) {
 		printk(KERN_ERR "failed to request GPJ1 for camera control\n");
-	
+
 		return err;
 	}
 
@@ -1931,26 +1932,26 @@ static int ce147_power_off(void)
 
 	// CAM_VGA_nRST  LOW		
 	gpio_direction_output(GPIO_CAM_VGA_nRST, 1);
-	
+
 	gpio_set_value(GPIO_CAM_VGA_nRST, 0);
 
 	mdelay(1);
 
 	// CAM_MEGA_nRST - GPJ1(5) LOW
 	gpio_direction_output(GPIO_CAM_MEGA_nRST, 1);
-	
+
 	gpio_set_value(GPIO_CAM_MEGA_nRST, 0);
-	
+
 	mdelay(1);
 
 	// Mclk disable
 	s3c_gpio_cfgpin(GPIO_CAM_MCLK, 0);
-	
+
 	mdelay(1);
 
 	// CAM_MEGA_EN - GPJ0(6) LOW
 	gpio_direction_output(GPIO_CAM_MEGA_EN, 1);
-	
+
 	gpio_set_value(GPIO_CAM_MEGA_EN, 0);
 
 	mdelay(1);
@@ -1958,7 +1959,7 @@ static int ce147_power_off(void)
 	ce147_ldo_en(FALSE);
 
 	mdelay(1);
-	
+
 	gpio_free(GPIO_CAM_MEGA_EN);
 	gpio_free(GPIO_CAM_MEGA_nRST);
 	gpio_free(GPIO_CAM_VGA_nRST);
@@ -2017,7 +2018,7 @@ static int smdkc110_cam1_power(int onoff)
 	}
 
 	gpio_direction_output(S5PV210_GPB(0), 0);
-	
+
 	mdelay(1);
 
 	gpio_direction_output(S5PV210_GPB(0), 1);
@@ -2029,7 +2030,7 @@ static int smdkc110_cam1_power(int onoff)
 	mdelay(1);
 
 	gpio_free(S5PV210_GPB(0));
-	
+
 	mdelay(1);
 
 	/* CAM_VGA_nRST - GPB(2) */
@@ -2126,7 +2127,7 @@ static int s5k4ecgx_regulator_init(void)
 {
 	printk("%s: start\n", __func__);
 /*BUCK 4*/
-	
+
 	if (IS_ERR_OR_NULL(cam_isp_core_regulator)) {
 		cam_isp_core_regulator = regulator_get(NULL, "cam_soc_core");
 		if (IS_ERR_OR_NULL(cam_isp_core_regulator)) {
@@ -2134,7 +2135,7 @@ static int s5k4ecgx_regulator_init(void)
 			return -EINVAL;
 		}
 	}
-	
+
 /*ldo 15*/
 	if (IS_ERR_OR_NULL(cam_isp_host_regulator)) {
 		cam_isp_host_regulator = regulator_get(NULL, "cam_soc_a");
@@ -2214,7 +2215,7 @@ static int s5k4ecgx_ldo_en(bool en)
 		goto off;
 	}
 	udelay(50);
-	
+
 	/* Turn CAM_ISP_HOST_2.8V(VDDIO) on ldo 15*/
 	err = regulator_enable(cam_isp_host_regulator);
 	if (err) {
@@ -2230,7 +2231,7 @@ static int s5k4ecgx_ldo_en(bool en)
 		goto off;
 	}
 	udelay(50);
-	
+
 	/*ldo 16*/
 	err = regulator_enable(cam_vga_avdd_regulator);
 	if (err) {
@@ -2251,7 +2252,7 @@ static int s5k4ecgx_ldo_en(bool en)
 
 off:
 	result = err;
-	
+
 	/* ldo 16 */
 	err = regulator_disable(cam_vga_avdd_regulator);
 	if (err) {
@@ -2278,13 +2279,13 @@ off:
 		result = err;
 	}
 	/* BUCK 4 */
-	
+
 	err = regulator_disable(cam_isp_core_regulator);
 	if (err) {
 		pr_err("Failed to disable regulator cam_isp_core\n");
 		result = err;
 	}
-	
+
 	s3c_gpio_cfgpin(S5PV210_GPD0(1), S3C_GPIO_OUTPUT);
 	s3c_gpio_setpull(S5PV210_GPD0(1), S3C_GPIO_PULL_NONE);
 	gpio_set_value(S5PV210_GPD0(1), 0);
@@ -2322,13 +2323,13 @@ static int s5k4ecgx_power_on(void)
 
 		return err;
 	}
-	
+
 	s5k4ecgx_ldo_en(true);
 
 	gpio_direction_output(GPIO_CAM_VGA_nSTBY, 0);
 	gpio_set_value(GPIO_CAM_VGA_nSTBY, 1);
 	mdelay(6);
-	
+
 	s3c_gpio_cfgpin(GPIO_CAM_MCLK, S3C_GPIO_SFN(0x02));
 
 	mdelay(4);
@@ -2396,7 +2397,7 @@ static int s5k4ecgx_power_off(void)
 
 	s3c_gpio_cfgpin(GPIO_CAM_MCLK, 0);
 	udelay(50);
-	
+
 	gpio_direction_output(GPIO_CAM_nSTBY, 1);
 	gpio_set_value(GPIO_CAM_nSTBY, 0);
 	udelay(50);
@@ -2410,12 +2411,12 @@ static int s5k4ecgx_power_off(void)
 	udelay(50);
 
 	s5k4ecgx_ldo_en(false);
-	
+
 	gpio_free(GPIO_CAM_VGA_nSTBY);
 	gpio_free(GPIO_CAM_VGA_nRST);
 	gpio_free(GPIO_CAM_nSTBY);
 	gpio_free(GPIO_CAM_MEGA_nRST);
-	
+
 	return 0;
 }
 
@@ -2615,7 +2616,7 @@ static int s5k5ccgx_regulator_init(void)
 {
 	printk("%s: start\n", __func__);
 /*BUCK 4*/
-	
+
 	if (IS_ERR_OR_NULL(cam_isp_core_regulator)) {
 		cam_isp_core_regulator = regulator_get(NULL, "cam_soc_core");
 		if (IS_ERR_OR_NULL(cam_isp_core_regulator)) {
@@ -2623,7 +2624,7 @@ static int s5k5ccgx_regulator_init(void)
 			return -EINVAL;
 		}
 	}
-	
+
 /*ldo 15*/
 	if (IS_ERR_OR_NULL(cam_isp_host_regulator)) {
 		cam_isp_host_regulator = regulator_get(NULL, "cam_soc_a");
@@ -2700,7 +2701,7 @@ static int s5k5ccgx_ldo_en(bool en)
 		goto off;
 	}
 	udelay(50);
-	
+
 	/* Turn CAM_ISP_HOST_2.8V(VDDIO) on ldo 15*/
 	err = regulator_enable(cam_isp_host_regulator);
 	if (err) {
@@ -2736,7 +2737,7 @@ static int s5k5ccgx_ldo_en(bool en)
 
 off:
 	result = err;
-	
+
 	/* ldo 16 */
 	err = regulator_disable(cam_vga_avdd_regulator);
 	if (err) {
@@ -2751,13 +2752,13 @@ off:
 		result = err;
 	}
 	/* BUCK 4 */
-	
+
 	err = regulator_disable(cam_isp_core_regulator);
 	if (err) {
 		pr_err("Failed to disable regulator cam_isp_core\n");
 		result = err;
 	}
-	
+
 	/* ldo 13 */
 	err = regulator_disable(cam_vga_vddio_regulator);
 	if (err) {
@@ -2814,7 +2815,7 @@ static int s5k5ccgx_power_on(void)
 	gpio_direction_output(S5PV210_GPD0(1),  1);
 	gpio_set_value(S5PV210_GPD0(1), 1);
 	*/
-	
+
 	s5k5ccgx_ldo_en(true);
 
 	udelay(20);
@@ -3495,7 +3496,7 @@ static u8 t7_config[] = {GEN_POWERCONFIG_T7,
 static u8 t8_config[] = {GEN_ACQUISITIONCONFIG_T8,
 				7, 0, 5, 0, 0, 0, 9, 35};
 static u8 t9_config[] = {TOUCH_MULTITOUCHSCREEN_T9,
-				139, 0, 0, 19, 11, 0, 33, 25, 0, 1, 0, 0, 1,
+				139, 0, 0, 19, 11, 0, 32, 25, 2, 1, 25, 3, 1,
 				46, MXT224_MAX_MT_FINGERS, 5, 14, 10, 255, 3,
 				255, 3, 18, 18, 10, 10, 141, 65, 143, 110, 18};
 static u8 t18_config[] = {SPT_COMCONFIG_T18,
@@ -4202,7 +4203,7 @@ static int wlan_power_en(int onoff)
 		s3c_gpio_slp_setpull_updown(GPIO_WLAN_BT_EN,
 					S3C_GPIO_PULL_NONE);
 
-		msleep(200);
+		msleep(80);
 	} else {
 		gpio_set_value(GPIO_WLAN_nRST, GPIO_LEVEL_LOW);
 		s3c_gpio_slp_cfgpin(GPIO_WLAN_nRST, S3C_GPIO_SLP_OUT0);
@@ -4252,7 +4253,6 @@ static int wlan_carddetect_en(int onoff)
 	udelay(5);
 
 	sdhci_s3c_force_presence_change(&s3c_device_hsmmc3);
-	msleep(500); /* wait for carddetect */
 	return 0;
 }
 
@@ -4300,13 +4300,13 @@ int __init aries_init_wifi_mem(void)
 		if (!wlan_static_skb[i])
 			goto err_skb_alloc;
 	}
-	
+
 	for (; i < 16; i++) {
 		wlan_static_skb[i] = dev_alloc_skb(DHD_SKB_2PAGE_BUFSIZE);
 		if (!wlan_static_skb[i])
 			goto err_skb_alloc;
 	}
-	
+
 	wlan_static_skb[i] = dev_alloc_skb(DHD_SKB_4PAGE_BUFSIZE);
 	if (!wlan_static_skb[i])
 		goto err_skb_alloc;
@@ -4823,9 +4823,8 @@ void otg_phy_init(void)
 	writel(readl(S3C_USBOTG_PHYTUNE) | (0x1<<20),
 			S3C_USBOTG_PHYTUNE);
 
-	/* set DC level as 6 (6%) */
-	writel((readl(S3C_USBOTG_PHYTUNE) & ~(0xf)) | (0x1<<2) | (0x1<<1),
-			S3C_USBOTG_PHYTUNE);
+/* set DC level as 0xf (24%) */
+writel(readl(S3C_USBOTG_PHYTUNE) | 0xf, S3C_USBOTG_PHYTUNE);
 }
 EXPORT_SYMBOL(otg_phy_init);
 
@@ -4877,7 +4876,7 @@ void usb_host_phy_off(void)
 EXPORT_SYMBOL(usb_host_phy_off);
 #endif
 
-MACHINE_START(VENTURI, "venturi")
+MACHINE_START(SMDKC110, "SMDKC110")
 	/* Maintainer: Kukjin Kim <kgene.kim@samsung.com> */
 	.phys_io	= S3C_PA_UART & 0xfff00000,
 	.io_pg_offst	= (((u32)S3C_VA_UART) >> 18) & 0xfffc,
@@ -4891,6 +4890,17 @@ MACHINE_START(VENTURI, "venturi")
 #else
 	.timer		= &s3c24xx_timer,
 #endif
+MACHINE_END
+
+MACHINE_START(VENTURI, "SMDKC110")
+	.phys_io	= S3C_PA_UART & 0xfff00000,
+	.io_pg_offst	= (((u32)S3C_VA_UART) >> 18) & 0xfffc,
+	.boot_params	= S5P_PA_SDRAM + 0x100,
+	.fixup		= aries_fixup,
+	.init_irq	= s5pv210_init_irq,
+	.map_io		= aries_map_io,
+	.init_machine	= aries_machine_init,
+	.timer		= &s5p_systimer,
 MACHINE_END
 
 void s3c_setup_uart_cfg_gpio(unsigned char port)
