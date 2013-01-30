@@ -181,9 +181,9 @@ static int aries_notifier_call(struct notifier_block *this,
 			mode = REBOOT_MODE_ARM9_FOTA;
 		else if (!strcmp((char *)_cmd, "recovery"))
 			mode = REBOOT_MODE_RECOVERY;
+		//else if (!strcmp((char *)_cmd, "bootloader"))
+		//	mode = REBOOT_MODE_FAST_BOOT;
 		else if (!strcmp((char *)_cmd, "bootloader"))
-			mode = REBOOT_MODE_FAST_BOOT;
-		else if (!strcmp((char *)_cmd, "download"))
 			mode = REBOOT_MODE_DOWNLOAD;
 		else
 			mode = REBOOT_MODE_NONE;
@@ -305,9 +305,12 @@ static struct s3c2410_uartcfg aries_uartcfgs[] __initdata = {
 	},
 };
 
+#define S5PV210_LCD_WIDTH 480
+#define S5PV210_LCD_HEIGHT 800
+
 static struct s3cfb_lcd hx8369 = {
-	.width = 480,
-	.height = 800,
+        .width = S5PV210_LCD_WIDTH,
+        .height = S5PV210_LCD_HEIGHT,
 	.p_width = 52,
 	.p_height = 86,
 	.bpp = 24,
@@ -332,37 +335,40 @@ static struct s3cfb_lcd hx8369 = {
 };
 
 #if 0
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0 (14745 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC1 (9900 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC2 (14745 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0 (5000 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC2 (5000 * SZ_1K)
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (32768 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (32768 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMD (4800 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_JPEG (8192 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_PMEM (8192 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_GPU1 (3300 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_ADSP (6144 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (32768* SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMD (3000 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_JPEG (4096 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_PMEM (2048 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_GPU1 (3000 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_ADSP (1500* SZ_1K)
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_TEXTSTREAM (3000 * SZ_1K)
 #else	// optimized settings, 19th Jan.2011
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0 (12288 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC1 (9900 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC2 (12288 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0 (5000 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC2 (5000 * SZ_1K)
 #if !defined(CONFIG_ARIES_NTT)   
 #if defined(CONFIG_VENTURI_KOR) // Usys_sadang KH23 support playing 1080p
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (36864 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (36864 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (32768 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (32768* SZ_1K)
+#else    /* NTT - support playing 1080p */
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (32768 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (32768* SZ_1K)
+#endif
 #else    /* NTT - support playing 1080p */
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (32768 * SZ_1K)
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (32768 * SZ_1K)
 #endif
-#else    /* NTT - support playing 1080p */
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC0 (36864 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_MFC1 (36864 * SZ_1K)
-#endif
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMD (3000 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_JPEG (5012 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_PMEM (5550 * SZ_1K)
-#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_GPU1 (3300 * SZ_1K)
+//#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMD (3000 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMD (S5PV210_LCD_WIDTH * \
+                                             S5PV210_LCD_HEIGHT * 4 * \
+                                             (CONFIG_FB_S3C_NR_BUFFERS + \
+                                                 (CONFIG_FB_S3C_NUM_OVLY_WIN * \
+                                                  CONFIG_FB_S3C_NUM_BUF_OVLY_WIN)))
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_JPEG (4096 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_PMEM (2048 * SZ_1K)
+#define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_GPU1 (3000 * SZ_1K)
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_ADSP (1500 * SZ_1K)
 #define  S5PV210_VIDEO_SAMSUNG_MEMSIZE_TEXTSTREAM (3000 * SZ_1K)
 #endif
@@ -388,13 +394,6 @@ static struct s5p_media_device aries_media_devs[] = {
 		.name = "fimc0",
 		.bank = 1,
 		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC0,
-		.paddr = 0,
-	},
-	[3] = {
-		.id = S5P_MDEV_FIMC1,
-		.name = "fimc1",
-		.bank = 1,
-		.memsize = S5PV210_VIDEO_SAMSUNG_MEMSIZE_FIMC1,
 		.paddr = 0,
 	},
 	[4] = {
@@ -697,8 +696,8 @@ static struct regulator_init_data aries_ldo16_data = {
 static struct regulator_init_data aries_ldo17_data = {
 	.constraints	= {
 		.name		= "VCC_3.0V_LCD",
-		.min_uV		= 3000000,
-		.max_uV		= 3000000,
+		.min_uV		= 2600000,
+		.max_uV		= 2600000,
 		.apply_uV	= 1,
 		.always_on	= 0,
 		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
@@ -1475,12 +1474,12 @@ static struct gpio_event_direct_entry aries_keypad_key_map[] = {
 			.code	= KEY_POWER,
 		},
 #if defined(CONFIG_MACH_VENTURI)
-#if !defined(CONFIG_VENTURI_USA)
+//#if !defined(CONFIG_VENTURI_USA)
 		{
 			.gpio	= S5PV210_GPH3(0),
 			.code	= KEY_HOME,
 		},
-#endif
+//#endif
 		{
 			.gpio	= S5PV210_GPH3(1),
 			.code	= KEY_VOLUMEDOWN,
@@ -3496,7 +3495,7 @@ static u8 t7_config[] = {GEN_POWERCONFIG_T7,
 static u8 t8_config[] = {GEN_ACQUISITIONCONFIG_T8,
 				7, 0, 5, 0, 0, 0, 9, 35};
 static u8 t9_config[] = {TOUCH_MULTITOUCHSCREEN_T9,
-				139, 0, 0, 19, 11, 0, 32, 25, 2, 1, 25, 3, 1,
+				139, 0, 0, 19, 11, 0, 33, 25, 0, 1, 0, 0, 1,
 				46, MXT224_MAX_MT_FINGERS, 5, 14, 10, 255, 3,
 				255, 3, 18, 18, 10, 10, 141, 65, 143, 110, 18};
 static u8 t18_config[] = {SPT_COMCONFIG_T18,
@@ -4203,7 +4202,7 @@ static int wlan_power_en(int onoff)
 		s3c_gpio_slp_setpull_updown(GPIO_WLAN_BT_EN,
 					S3C_GPIO_PULL_NONE);
 
-		msleep(80);
+		msleep(200);
 	} else {
 		gpio_set_value(GPIO_WLAN_nRST, GPIO_LEVEL_LOW);
 		s3c_gpio_slp_cfgpin(GPIO_WLAN_nRST, S3C_GPIO_SLP_OUT0);
@@ -4253,6 +4252,7 @@ static int wlan_carddetect_en(int onoff)
 	udelay(5);
 
 	sdhci_s3c_force_presence_change(&s3c_device_hsmmc3);
+	msleep(500); /* wait for carddetect */
 	return 0;
 }
 
@@ -4823,8 +4823,9 @@ void otg_phy_init(void)
 	writel(readl(S3C_USBOTG_PHYTUNE) | (0x1<<20),
 			S3C_USBOTG_PHYTUNE);
 
-/* set DC level as 0xf (24%) */
-writel(readl(S3C_USBOTG_PHYTUNE) | 0xf, S3C_USBOTG_PHYTUNE);
+	/* set DC level as 6 (6%) */
+	writel((readl(S3C_USBOTG_PHYTUNE) & ~(0xf)) | (0x1<<2) | (0x1<<1),
+			S3C_USBOTG_PHYTUNE);
 }
 EXPORT_SYMBOL(otg_phy_init);
 
@@ -4876,7 +4877,7 @@ void usb_host_phy_off(void)
 EXPORT_SYMBOL(usb_host_phy_off);
 #endif
 
-MACHINE_START(SMDKC110, "SMDKC110")
+MACHINE_START(VENTURI, "venturi")
 	/* Maintainer: Kukjin Kim <kgene.kim@samsung.com> */
 	.phys_io	= S3C_PA_UART & 0xfff00000,
 	.io_pg_offst	= (((u32)S3C_VA_UART) >> 18) & 0xfffc,
@@ -4890,17 +4891,6 @@ MACHINE_START(SMDKC110, "SMDKC110")
 #else
 	.timer		= &s3c24xx_timer,
 #endif
-MACHINE_END
-
-MACHINE_START(VENTURI, "SMDKC110")
-	.phys_io	= S3C_PA_UART & 0xfff00000,
-	.io_pg_offst	= (((u32)S3C_VA_UART) >> 18) & 0xfffc,
-	.boot_params	= S5P_PA_SDRAM + 0x100,
-	.fixup		= aries_fixup,
-	.init_irq	= s5pv210_init_irq,
-	.map_io		= aries_map_io,
-	.init_machine	= aries_machine_init,
-	.timer		= &s5p_systimer,
 MACHINE_END
 
 void s3c_setup_uart_cfg_gpio(unsigned char port)
